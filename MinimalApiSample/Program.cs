@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MinimalApiSample.DataDb;
+using MinimalApiSample.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+//builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+
+
+builder.Services.AddDbContext<MovieMVCrud>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("MovieMVCrud")));
+
 
 var app = builder.Build();
 
@@ -21,36 +27,50 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//var summaries = new[]
+// Creando Apis 
+//app.MapGet("/todoitems", async (TodoDb db) =>
+//    await db.Todos.ToListAsync())
+//        .WithName("ShowAllItems");
+
+//app.MapGet("/todoitemsIs", async (TodoDb db) =>
 //{
-//    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-//};
-
-//app.MapGet("/weatherforecast", () =>
+//    await db.Todos
+//    .Where(x => x.IsComplete == true)
+//    .ToListAsync();
+//});
+//app.MapPost("TodoPost", async (AllItems todo, TodoDb db) =>
 //{
-//    var forecast = Enumerable.Range(1, 5).Select(index =>
-//        new WeatherForecast
-//        (
-//            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-//            Random.Shared.Next(-20, 55),
-//            summaries[Random.Shared.Next(summaries.Length)]
-//        ))
-//        .ToArray();
-//    return forecast;
-//})
-//.WithName("GetWeatherForecast")
-//.WithOpenApi();
+//    db.Todos.Add(todo);
+//    await db.SaveChangesAsync();
+//    return Results.Created($"/todoitems{todo.Id}", todo);
+//});
+//app.MapGet("JustId/{id}", async (int id, TodoDb db) =>
+//    await db.Todos.FindAsync(id)
+//    is AllItems todo
+//    ? Results.Ok(todo)
+//    : Results.NotFound());
 
-app.MapGet("/todoitems", async (TodoDb db) =>
-    await db.Todos.ToListAsync());
+//app.MapDelete("DeleteItem/{id}", async (int id, TodoDb db) =>
+//{
+//    if (await db.Todos.FindAsync(id) is AllItems item)
+//    {
+//        db.Todos.Remove(item);
+//        await db.SaveChangesAsync();
+//        return Results.Ok(item);
+//    }
+//    return Results.NotFound();
+//});
 
+//app.MapPut("ChangeData/{id}", async (int id, AllItems imputTodo, TodoDb db) =>
+//{
+//    var item = await db.Todos.FindAsync(id);
+//    if (item is null) return Results.NotFound();
+
+//    item.IsComplete = imputTodo.IsComplete;
+//    item.Name = imputTodo.Name;
+//    await db.SaveChangesAsync();
+//    return Results.NoContent();
+//});
+app.MapGet("/ComeHere", () => "Hello Apis");
+// Test Apis
 app.Run();
-
-//internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-//{
-//    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-//}
-
-
-
-
