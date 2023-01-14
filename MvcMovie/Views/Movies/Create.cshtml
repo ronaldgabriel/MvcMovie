@@ -1,0 +1,27 @@
+﻿
+
+
+<div>
+    <div class="row">
+        <div class="col-10">
+            <h1>New Movie</h1>
+        </div>
+    </div>
+    <br />
+    <div class="col">
+        <form asp-controller="Movies" asp-action="Create">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput" placeholder="Title of the list" name="Title">
+                <label for="floatingInput">Name of the List</label>
+            </div>
+            <div class="form-floating">
+                <input class="form-control" placeholder="Genero" id="floatingTextarea" name="Genre" />
+                <label for="floatingTextarea">Genero</label>
+            </div>
+            <br />
+            <div>
+                <button type="submit" class="btn btn-primary">Create Movie</button>
+            </div>
+        </form>
+    </div>
+</div>

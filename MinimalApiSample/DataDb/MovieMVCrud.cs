@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MinimalApiSample.Models;
+﻿using ManagerModel.Models;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace MinimalApiSample.DataDb
 {
