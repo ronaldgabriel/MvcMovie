@@ -1,11 +1,17 @@
+using Microsoft.Net.Http.Headers;
 using MvcMovie.Models;
+using System.Linq.Expressions;
 
 var builder = WebApplication.CreateBuilder(args);
+// Add services to the container.
+builder.Services.AddHttpClient();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+builder.Services.AddHttpClient("APIDirection");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -19,8 +25,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 
-//app.Urls.Add("https://localhost:3000");
-
+   
 
 app.UseRouting();
 var test = new HelloHandlerTest();

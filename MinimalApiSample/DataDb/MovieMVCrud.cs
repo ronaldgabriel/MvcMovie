@@ -1,4 +1,5 @@
-﻿using ManagerModel.Models;
+﻿
+using ManagerModel.Models;
 using Microsoft.EntityFrameworkCore;
 
 
