@@ -9,14 +9,47 @@ using MinimalApiSample.DbMysql;
 using MinimalApiSample.IIterfaces;
 using MinimalApiSample.ServiceCustom;
 using Microsoft.IdentityModel.Tokens;
-
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddSwaggerGen();
+
+
+
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<MinimalApiSample.DataDb.TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
@@ -44,6 +77,48 @@ builder.Services.AddDbContext<DataBaseMsql>(options => {
 
 
 
+builder.Services.AddScoped<TokenService, TokenService>();
+
+builder.Services.AddDbContext<DataBaseWithIdentity>(options => {
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthIdentity")
+        );
+});
+
+builder.Services
+    .AddIdentityCore<IdentityUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 3;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+    })
+    .AddEntityFrameworkStores<DataBaseWithIdentity>();
+
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ClockSkew = TimeSpan.Zero,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "apiWithAuthBackend",
+            ValidAudience = "apiWithAuthBackend",
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("!SomethingSecret!")
+            ),
+        };
+    });
+
+
+
 
 
 
@@ -60,9 +135,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
-
+ // app.UseSession();
 
 app.MapControllers();
 app.MapDefaultControllerRoute();
@@ -109,7 +185,7 @@ app.UseHttpsRedirection();
 //   // var item = await db.Movie.FindAsync(id);
 //    var _item = await  db.Movie.Where( x=> x.Id.Equals(id)).FirstAsync();
 //    if (_item is null) return Results.NotFound();
-   
+
 //    // item.IsComplete = imputTodo.IsComplete;
 //    _item.Title = imputTodo.Title;
 //    await db.SaveChangesAsync();
@@ -117,4 +193,8 @@ app.UseHttpsRedirection();
 //});
 //app.MapGet("/ComeHere", () => "Hello Apis");
 // Test Apis
+
+
+
+
 app.Run();

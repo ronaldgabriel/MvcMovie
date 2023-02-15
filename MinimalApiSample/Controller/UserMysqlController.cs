@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApiSample.IIterfaces;
 using MinimalApiSample.ModelsMysql;
@@ -17,28 +18,28 @@ namespace MinimalApiSample.Controller
             _service = service;
 
         }
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<IActionResult> GetTodoItems()
         {
             var data = await _service.GetDataAsync();
             return Ok(data);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         [Route("AddNewElement")]
         public async Task<ActionResult<UserMysql>> PostItem(UserMysql item)
         {
             // can evaluate item if null etc 
             return await _service.PostItemAsync(item);
         }
-        [HttpGet]
+        [HttpGet, Authorize]
         [Route("GetId")]
         public async Task<IActionResult> GetStudentByIdAsync(string Id)
         {
             var element = await _service.GetDataIdAsync(Id);
             return Ok(element);
         }
-        [HttpDelete]
+        [HttpDelete, Authorize]
         [Route("DeleteElement")]
         public async Task<IActionResult> DeleteByIdAsync(string Id)
         {
@@ -65,7 +66,7 @@ namespace MinimalApiSample.Controller
 
         }
         
-        [HttpPut]
+        [HttpPut, Authorize]
         [Route("UpdateElement")]
         public async Task<ActionResult<UserMysql>> PutItem(UserMysql item)
         {

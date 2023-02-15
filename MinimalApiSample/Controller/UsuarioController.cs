@@ -1,5 +1,6 @@
 ﻿
 using ManagerModel.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalApiSample.IIterfaces;
@@ -20,20 +21,20 @@ namespace MinimalApiSample.Controller
                
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<IActionResult> GetTodoItems()
         {
             var data = await _service.GetDataAsync();
             return Ok(data);
         }
-        [HttpGet]
+        [HttpGet, Authorize]
         [Route("Getid")]
         public async Task<IActionResult> GetStudentByIdAsync(string Id)
         {
             var element = await _service.GetDataIdAsync(Id);
             return Ok(element);
         }
-        [HttpDelete]
+        [HttpDelete, Authorize]
         [Route("DeleteElement")]
         public async Task<IActionResult> DeleteByIdAsync(string Id)
         {
@@ -58,14 +59,14 @@ namespace MinimalApiSample.Controller
             }
            
         }
-        [HttpPost]
+        [HttpPost, Authorize]
         [Route("AddNewElement")]
         public async Task<ActionResult<MovieModel>> PostItem(MovieModel item)
         {
             // can evaluate item if null etc 
             return await _service.PostItemAsync(item);
         }
-        [HttpPut]
+        [HttpPut, Authorize]
         [Route("UpdateElement")]
         public async Task<ActionResult<MovieModel>> PutItem(MovieModel item)
         {
