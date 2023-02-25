@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Firebase.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,13 @@ namespace MinimalApiSample.Controller
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(SignInManager<IdentityUser> signInManager, ILogger<AuthController> logger, UserManager<IdentityUser> userManager, DataBaseWithIdentity context, TokenService tokenService)
+        public AuthController( ILogger<AuthController> logger, SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager, DataBaseWithIdentity context, TokenService tokenService)
         {
             _userManager = userManager;
             _context = context;
             _tokenService = tokenService;
-            _signInManager = signInManager;
+             _signInManager = signInManager;
             _logger = logger;
         }
         [HttpPost]
@@ -72,7 +74,10 @@ namespace MinimalApiSample.Controller
             if (userInDb is null)
                 return Unauthorized();
             var accessToken = _tokenService.CreateToken(userInDb);
-            await _context.SaveChangesAsync();
+            //  await _context.SaveChangesAsync();
+            var user = new IdentityUser { UserName = request.Email, Email = request.Email };
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
             return Ok(new AuthResponse
             {
                 Username = userInDb.UserName,
@@ -81,13 +86,29 @@ namespace MinimalApiSample.Controller
             });
         }
 
+        [HttpGet("{username}")]
+        public async Task<ActionResult<User>> GetUser(string username)
+        {
+            IdentityUser user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return new User
+            {
+                FirstName = user.UserName,
+                Email = user.Email
+            };
+        }
+
 
         [HttpGet]
         [Route("SignOut")]
-        public async Task<ActionResult<string>> SignOut()
+        public async Task<ActionResult<string>> SSignOut()
         {
-
-            
+            var user = await _userManager.GetUserAsync(User);
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
             return "log Out ";

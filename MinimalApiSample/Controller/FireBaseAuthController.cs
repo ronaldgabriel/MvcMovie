@@ -163,20 +163,7 @@ namespace MinimalApiSample.Controller
                 });
             }
             return list;
-        }
-
-        [HttpDelete]
-        [Route("DeleteFireBaseData")]
-        public async Task<ActionResult<DataFireBase>> DeleteFireBaseData(Guid id)
-        {
-            DataFireBase dato = new DataFireBase();
-
-
-
-            var response = await client.DeleteAsync("JsonUser/" + id.ToString());
-
-            return dato;
-        }
+        } 
 
     }
 }

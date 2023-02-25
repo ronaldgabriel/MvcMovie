@@ -12,6 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
+builder.Services.AddCors();
 
 
 
@@ -61,7 +64,7 @@ builder.Services.AddDbContext<MovieMVCrud>(options => {
         );
  });
 
- builder.Services.AddTransient<IDataService, DataService>();
+builder.Services.AddTransient<IDataService, DataService>();
 
 
 builder.Services.AddTransient<IDataServiceMsql, DataServiceMysql>();
@@ -70,7 +73,8 @@ builder.Services.AddTransient<IDataServiceMsql, DataServiceMysql>();
 
 var connectionString = builder.Configuration.GetConnectionString("DbMysql");
 
-builder.Services.AddDbContext<DataBaseMsql>(options => {
+builder.Services.AddDbContext<DataBaseMsql>(options =>
+{
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
@@ -85,7 +89,7 @@ builder.Services.AddDbContext<DataBaseWithIdentity>(options => {
 });
 
 builder.Services
-    .AddIdentityCore<IdentityUser>(options =>
+    .AddIdentity<IdentityUser, IdentityRole>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
@@ -97,6 +101,13 @@ builder.Services
     })
     .AddEntityFrameworkStores<DataBaseWithIdentity>();
 
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.SlidingExpiration = true;
+            options.ExpireTimeSpan = new TimeSpan(0, 1, 0);
+        });
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -194,7 +205,11 @@ app.UseHttpsRedirection();
 //app.MapGet("/ComeHere", () => "Hello Apis");
 // Test Apis
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 
+
+
+app.UseCors("AllowOrigin");
 
 app.Run();

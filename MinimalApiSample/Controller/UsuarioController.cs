@@ -1,6 +1,7 @@
 ﻿
 using ManagerModel.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalApiSample.IIterfaces;
@@ -21,7 +22,8 @@ namespace MinimalApiSample.Controller
                
         }
 
-        [HttpGet, Authorize]
+        [HttpGet]
+        [EnableCors("AllowOrigin")]
         public async Task<IActionResult> GetTodoItems()
         {
             var data = await _service.GetDataAsync();
