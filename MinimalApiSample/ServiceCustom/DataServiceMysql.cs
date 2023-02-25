@@ -6,7 +6,7 @@ using MinimalApiSample.ModelsMysql;
 
 namespace MinimalApiSample.ServiceCustom
 {
-    public class DataServiceMysql : IDataServiceMsql
+    public class DataServiceMysql : IDataServiceMysql
     {
         private readonly DataBaseMsql _context;
         public DataServiceMysql(DataBaseMsql context)
@@ -19,22 +19,22 @@ namespace MinimalApiSample.ServiceCustom
         {
             return await _context.UserMysqls.ToListAsync();
         }
-        public async Task<UserMysql> DeleteDataIdAsync(string Id)
+        public async Task<UserMysql> DeleteDataIdAsync(Guid Id)
         {
-            var DataId = Guid.Parse(Id);
-            var element = await _context.UserMysqls.Where(x => x.Id.Equals(DataId)).FirstAsync();
+           // var DataId = Guid.Parse(Id);
+            var element = await _context.UserMysqls.Where(x => x.Id == Id).FirstAsync();
             if (element == null)
             {
-                return new UserMysql() { Id = DataId, Name = "Element Not Found ", LastName = "null" };
+                return new UserMysql() { Id = Id, Name = "Element Not Found ", LastName = "null" };
             }
             _context.UserMysqls.Remove(element);
             await _context.SaveChangesAsync();
             return element;
         }
-        public async Task<UserMysql> GetDataIdAsync(string Id)
+        public async Task<UserMysql> GetDataIdAsync(Guid Id)
         {
-            var DataId = Guid.Parse(Id);
-            return await _context.UserMysqls.Where(x => x.Id.Equals(DataId)).FirstAsync();
+            // var DataId = Guid.Parse(Id);
+            return await _context.UserMysqls.Where(x => x.Id == Id).FirstAsync();
         }
 
         public async Task<UserMysql> PostItemAsync(UserMysql item)

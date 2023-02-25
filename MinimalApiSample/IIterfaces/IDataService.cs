@@ -13,13 +13,22 @@ namespace MinimalApiSample.IIterfaces
         Task<MovieModel> PutItemAsync(MovieModel item);
 
     }
-    public interface IDataServiceMsql
+    public interface IDataServiceMysql
     {
         Task<List<UserMysql>> GetDataAsync();
-        Task<UserMysql> GetDataIdAsync(string Id);
-        Task<UserMysql> DeleteDataIdAsync(string Id);
+        Task<UserMysql> GetDataIdAsync(Guid Id);
+        Task<UserMysql> DeleteDataIdAsync(Guid Id);
         Task<UserMysql> PostItemAsync(UserMysql item);
         Task<UserMysql> PutItemAsync(UserMysql item);
+
+    }
+    public interface IDataServiceTestMsql
+    {
+        List<UserMysql> GetDataAsync();
+        //UserMysql GetDataIdAsync(string Id);
+        //UserMysql DeleteDataIdAsync(string Id);
+        //UserMysql PostItemAsync(UserMysql item);
+        //UserMysql PutItemAsync(UserMysql item);
 
     }
 }

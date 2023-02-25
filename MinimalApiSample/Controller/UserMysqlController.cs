@@ -10,9 +10,9 @@ namespace MinimalApiSample.Controller
     [ApiController]
     public class UserMysqlController : ControllerBase
     {
-        private readonly IDataServiceMsql _service;
+        private readonly IDataServiceMysql _service;
 
-        public UserMysqlController(IDataServiceMsql service)
+        public UserMysqlController(IDataServiceMysql service)
         {
             // _MyConsultApi = MyConsultApi;
             _service = service;
@@ -27,21 +27,23 @@ namespace MinimalApiSample.Controller
 
         [HttpPost, Authorize]
         [Route("AddNewElement")]
-        public async Task<ActionResult<UserMysql>> PostItem(UserMysql item)
+        public async Task<IActionResult> PostItem(UserMysql item)
         {
             // can evaluate item if null etc 
-            return await _service.PostItemAsync(item);
+            //  return await _service.PostItemAsync(item);
+            await _service.PostItemAsync(item);
+            return Ok(item);
         }
         [HttpGet, Authorize]
         [Route("GetId")]
-        public async Task<IActionResult> GetStudentByIdAsync(string Id)
+        public async Task<IActionResult> GetByIdAsync(Guid Id)
         {
             var element = await _service.GetDataIdAsync(Id);
             return Ok(element);
         }
         [HttpDelete, Authorize]
         [Route("DeleteElement")]
-        public async Task<IActionResult> DeleteByIdAsync(string Id)
+        public async Task<IActionResult> DeleteByIdAsync(Guid Id)
         {
             var element = await _service.DeleteDataIdAsync(Id);
 
@@ -68,11 +70,12 @@ namespace MinimalApiSample.Controller
         
         [HttpPut, Authorize]
         [Route("UpdateElement")]
-        public async Task<ActionResult<UserMysql>> PutItem(UserMysql item)
+        public async Task<IActionResult> PutItem(UserMysql item)
         {
             // can evaluate item if null etc 
-            return await _service.PutItemAsync(item);
-
+            // return
+            await _service.PutItemAsync(item);
+            return Ok(item);
         }
 
     }

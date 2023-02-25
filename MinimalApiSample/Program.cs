@@ -8,7 +8,6 @@ using MinimalApiSample.DataDb;
 using MinimalApiSample.DbMysql;
 using MinimalApiSample.IIterfaces;
 using MinimalApiSample.ServiceCustom;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -67,7 +66,7 @@ builder.Services.AddDbContext<MovieMVCrud>(options => {
 builder.Services.AddTransient<IDataService, DataService>();
 
 
-builder.Services.AddTransient<IDataServiceMsql, DataServiceMysql>();
+builder.Services.AddTransient<IDataServiceMysql, DataServiceMysql>();
 
 
 
